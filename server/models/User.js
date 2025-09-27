@@ -43,4 +43,12 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
+const FavoriteSchema = new mongoose.Schema({
+  itemId: { type: String, required: true }, // match or player id
+  type: { type: String, required: true },   // 'match' or 'player'
+  title: String,
+  data: Object,
+  createdAt: { type: Date, default: Date.now },
+});
+
 module.exports = mongoose.model('User', userSchema);

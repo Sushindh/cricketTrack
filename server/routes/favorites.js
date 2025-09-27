@@ -1,59 +1,49 @@
-// routes/favorites.js
 const express = require('express');
 const router = express.Router();
+const User = require('../models/User');
 
-// Temporary in-memory storage (replace with MongoDB later)
-let favorites = [];
-
-// Get all favorites
-router.get('/', (req, res) => {
+// Get all favorites for a user
+router.get('/:userId', async (req, res) => {
   try {
-    res.json(favorites);
+    const user = await User.findById(req.params.userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.json(user.favorites || []);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch favorites', error: error.message });
   }
 });
 
 // Add to favorites
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   try {
-    const { itemId, type, title, data } = req.body;
-    
-    // Check if already exists
-    const existingIndex = favorites.findIndex(f => f.itemId === itemId && f.type === type);
-    
-    if (existingIndex !== -1) {
-      return res.status(400).json({ message: 'Already in favorites' });
-    }
+    const { userId, itemId, type, title, data } = req.body;
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
 
-    const favorite = {
-      id: Date.now().toString(),
-      itemId,
-      type,
-      title,
-      data,
-      createdAt: new Date().toISOString()
-    };
+    const exists = user.favorites.some(f => f.itemId === itemId && f.type === type);
+    if (exists) return res.status(400).json({ message: 'Already in favorites' });
 
-    favorites.push(favorite);
-    res.status(201).json(favorite);
+    user.favorites.push({ itemId, type, title, data });
+    await user.save();
+    res.status(201).json({ message: 'Added to favorites' });
   } catch (error) {
     res.status(500).json({ message: 'Failed to add favorite', error: error.message });
   }
 });
 
 // Remove from favorites
-router.delete('/:itemId/:type', (req, res) => {
+router.delete('/:userId/:itemId/:type', async (req, res) => {
   try {
-    const { itemId, type } = req.params;
-    
-    const initialLength = favorites.length;
-    favorites = favorites.filter(f => !(f.itemId === itemId && f.type === type));
-    
-    if (favorites.length === initialLength) {
-      return res.status(404).json({ message: 'Favorite not found' });
-    }
+    const { userId, itemId, type } = req.params;
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
 
+    const initialLength = user.favorites.length;
+    user.favorites = user.favorites.filter(f => !(f.itemId === itemId && f.type === type));
+    if (user.favorites.length === initialLength)
+      return res.status(404).json({ message: 'Favorite not found' });
+
+    await user.save();
     res.json({ message: 'Removed from favorites' });
   } catch (error) {
     res.status(500).json({ message: 'Failed to remove favorite', error: error.message });

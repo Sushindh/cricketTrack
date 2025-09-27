@@ -1,6 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const cron = require('node-cron');
+const { checkMatchAlerts, sendMatchReminders } = require('./services/emailService');
 
 // Initialize express app first
 const app = express();
@@ -9,6 +11,11 @@ app.use(cors({
   origin: process.env.CLIENT_URL || 'http://localhost:5173',
   credentials: true
 }));
+
+cron.schedule('*/5 * * * *', async () => { // every 5 minutes
+  await sendMatchReminders();
+  await checkMatchAlerts();
+});
 
 const chatRoutes = require('./routes/chat');
 app.use('/api/chat', chatRoutes);
@@ -95,6 +102,9 @@ try {
     res.status(503).json({ message: 'Matches service temporarily unavailable' });
   });
 }
+
+app.use('/api/tracker', require('./routes/tracker'));
+
 
 try {
   app.use('/api/players', require('./routes/players'));

@@ -4,8 +4,10 @@ import {
   HomeIcon, PlayIcon, UserGroupIcon, CalendarIcon, 
   LightBulbIcon, StarIcon, Bars3Icon, XMarkIcon 
 } from '@heroicons/react/24/outline';
+import { useAuth } from "../context/AuthContext";
 
 const Navbar = () => {
+  const { user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
 
@@ -44,6 +46,25 @@ const Navbar = () => {
             })}
           </div>
 
+          {/* Desktop Auth controls */}
+          {user ? (
+            <div className="hidden md:flex items-center space-x-2 ml-4">
+              <span className="font-semibold text-black">Hello, {user.name}</span>
+              <button 
+                className="ml-2 px-4 py-1 rounded bg-red-500 text-white font-bold"
+                onClick={logout}
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <div className="hidden md:flex items-center space-x-2 ml-4">
+              <Link className="text-blue-600 font-bold hover:underline" to="/login">Login</Link>
+              <span>|</span>
+              <Link className="text-green-600 font-bold hover:underline" to="/signup">Sign Up</Link>
+            </div>
+          )}
+
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="md:hidden p-2 rounded-lg bg-white border-2 border-black"
@@ -72,6 +93,24 @@ const Navbar = () => {
                 </Link>
               );
             })}
+            {/* Mobile auth controls */}
+            {user ? (
+              <div className="px-4 py-2 flex items-center space-x-2">
+                <span className="font-semibold text-black">Hello, {user.name}</span>
+                <button
+                  className="ml-2 px-3 py-1 rounded bg-red-500 text-white font-bold"
+                  onClick={() => { setIsMobileMenuOpen(false); logout(); }}
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <div className="px-4 py-2">
+                <Link className="text-blue-600 font-bold hover:underline" to="/login" onClick={() => setIsMobileMenuOpen(false)}>Login</Link>
+                <span> | </span>
+                <Link className="text-green-600 font-bold hover:underline" to="/signup" onClick={() => setIsMobileMenuOpen(false)}>Sign Up</Link>
+              </div>
+            )}
           </div>
         )}
       </div>
