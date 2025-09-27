@@ -1,0 +1,47 @@
+# Node modules
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Environment variable files
+.env
+.env.*
+
+# Logs
+logs
+*.log
+logs/*.log
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Database (if you ever use local for dev)
+*.local.db
+*.local.sqlite
+
+# VSCode/IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Production build artifacts (if any)
+build/
+dist/
+
+# Coverage
+coverage/
+.nyc_output
+
+# Optional: Ignore backup files
+*.bak
+
+# Optional: MongoDB dumps
+dump/
+*.archive
