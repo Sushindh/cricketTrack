@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StarIcon as StarIconOutline } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { CalendarIcon, ClockIcon } from '@heroicons/react/24/outline';
+import FavoriteButton from "../components/FavoriteButton";
 
 // Helper function for safe display
 function safeString(val) {
@@ -101,13 +102,27 @@ const MatchSchedule = () => {
                     <div className={`px-4 py-2 rounded-full text-white text-sm font-bold ${isToday ? 'bg-red-500' : 'bg-blue-500'}`}>
                       {isToday ? 'TODAY' : 'UPCOMING'}
                     </div>
-                    <button onClick={() => toggleFav(match.id)} className="p-2 rounded-full border-2 border-gray-300 hover:border-yellow-400">
-                      {favorites.includes(match.id) ? (
-                        <StarIconSolid className="w-6 h-6 text-yellow-500" />
-                      ) : (
-                        <StarIconOutline className="w-6 h-6 text-gray-400" />
-                      )}
-                    </button>
+                    <div className="border rounded-lg p-4 mb-4 flex justify-between items-center">
+                      {/* <span className="font-bold">{match.id}</span> */}
+                      <div className="border rounded-lg p-4 mb-4 flex justify-between items-center">
+                        <span className="font-bold">{team1} vs {team2}</span>
+                        <FavoriteButton
+                          itemId={match.id}
+                          itemType="match" // <-- ADD THIS!
+                          title={`${match.localteam.name} vs ${match.visitorteam.name}`}
+                          data={{
+                            series: match.series?.name,
+                            team1: match.localteam?.name,
+                            team2: match.visitorteam?.name,
+                            venue: match.venue?.name,
+                            date: match.starting_at
+                          }}
+                          isFavorite={favorites.some(f => f.itemId === match.id && f.type === "match")}
+                        />
+                      </div>
+
+
+                    </div>
                   </div>
                   <div className="text-center mb-6">
                     <h3 className="text-lg font-black text-black mb-2">{safeString(match.name) || 'Cricket Match'}</h3>

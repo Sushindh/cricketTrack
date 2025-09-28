@@ -1,8 +1,8 @@
 const axios = require('axios');
 
 // Using SportMonks Cricket API (Free tier - 180 calls/hour/endpoint)
-const API_BASE = 'https://cricket.sportmonks.com/api/v2.0';
-const API_KEY = 'your_sportmonks_api_key'; // Get from https://www.sportmonks.com
+const API_BASE = 'https://api.cricapi.com/v1';
+const API_KEY = '1768a3d2-3575-43bb-82be-e0db8a384c4e'; // Get from https://www.sportmonks.com
 
 const cricketAPI = axios.create({
   baseURL: API_BASE,

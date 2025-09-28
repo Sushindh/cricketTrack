@@ -20,26 +20,28 @@ export const getMatchSchedule = async (days = 7) => {
   return response.json();
 };
 
-export const getFavorites = async () => {
-  const response = await fetch(`${API_BASE}/favorites`);
-  if (!response.ok) throw new Error('Failed to fetch favorites');
-  return response.json();
-};
+//const API_BASE = 'http://localhost:3000/api';
 
-export const addToFavorites = async (item) => {
-  const response = await fetch(`${API_BASE}/favorites`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(item)
-  });
-  if (!response.ok) throw new Error('Failed to add to favorites');
-  return response.json();
-};
+export async function getFavorites(userId) {
+  const res = await fetch(`${API_BASE}/favorites/${userId}`);
+  return await res.json();
+}
 
-export const removeFromFavorites = async (itemId, type) => {
-  const response = await fetch(`${API_BASE}/favorites/${itemId}/${type}`, {
-    method: 'DELETE'
+export async function addFavorite(userId, favorite) {
+  const res = await fetch(`${API_BASE}/favorites/add`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId, favorite }) // favorite = {itemId, type, title, data, createdAt}
   });
-  if (!response.ok) throw new Error('Failed to remove from favorites');
-  return response.json();
-};
+  return await res.json();
+}
+
+export async function removeFavorite(userId, favoriteId) {
+  const res = await fetch(`${API_BASE}/favorites/remove`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId, favoriteId })
+  });
+  return await res.json();
+}
+

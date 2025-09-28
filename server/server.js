@@ -117,6 +117,8 @@ try {
   });
 }
 
+// ...other routes...
+
 try {
   app.use('/api/favorites', require('./routes/favorites'));
   routesLoaded.favorites = true;
@@ -127,6 +129,18 @@ try {
     res.status(503).json({ message: 'Favorites service temporarily unavailable' });
   });
 }
+
+// 404 handler must be the last route!
+app.use('*', (req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'Route not found',
+    path: req.originalUrl,
+    method: req.method,
+    timestamp: new Date().toISOString()
+  });
+});
+
 
 try {
   app.use('/api/chat', require('./routes/chat'));

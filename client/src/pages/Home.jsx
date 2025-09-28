@@ -3,6 +3,46 @@ import { ChatBubbleLeftRightIcon, SparklesIcon } from "@heroicons/react/24/outli
 import ChatBot from "../components/ChatBot";
 import { useAuth } from "../context/AuthContext";
 
+
+// --- Utility to clean Gemini response ----
+// Cleanly formats cricket stats string into nice bullet points
+const formatTrackerResult = (resultString) => {
+  if (!resultString || typeof resultString !== "string") return resultString;
+
+  // Preprocess to replace and separate sections
+  let cleaned = resultString
+    .replace(/(\*+)/g, "") // Remove extra asterisks (*)
+    .replace(/#+/g, "") // Remove hashes
+    .replace(/(?:To be more specific:)/gi, "") // Clean awkward phrases
+    .trim();
+
+  // DETECT headers and split sections
+  const sections = cleaned.split(/\s*(Test Cricket|One-Day Internationals|Twenty20 Internationals)\s*/gi)
+    .filter(Boolean);
+
+  // Assign section names for header clarity
+  let output = [];
+  for (let i = 0; i < sections.length; i++) {
+    const sec = sections[i].trim();
+    if (/^(Test Cricket|One-Day Internationals|Twenty20 Internationals)$/i.test(sec)) {
+      // It's a header
+      output.push(<h4 key={sec} className="font-bold text-blue-600 text-lg mb-2">{sec}</h4>);
+    } else {
+      // Bulletize each stat
+      output.push(
+        <ul key={i} className="list-disc list-inside text-gray-900 mb-4">
+          {sec.split(/\n|\.\s+|\*\s+/).map((line, idx) => 
+            line.trim() && <li key={idx}>{line.trim()}</li>
+          )}
+        </ul>
+      );
+    }
+  }
+  return <div>{output}</div>;
+};
+
+
+
 const Home = () => {
   const { user } = useAuth(); // user must have "id"
   const [recommendations, setRecommendations] = useState([]);
@@ -91,12 +131,13 @@ const Home = () => {
           )}
           {trackerResult && (
             <div className="mt-4 p-6 bg-blue-50 border-4 border-blue-300 rounded-2xl">
-              <h3 className="font-black text-2xl text-blue-700 mb-2">Tracker Result</h3>
-              <div className="text-lg text-black">
-                {typeof trackerResult === "string" ? trackerResult : JSON.stringify(trackerResult)}
+              <h3 className="font-black text-2xl text-blue-700 mb-4">Tracker Result</h3>
+              <div className="text-lg text-black text-left ">
+                {formatTrackerResult(trackerResult)}
               </div>
             </div>
           )}
+
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
           <div className="bg-white rounded-3xl shadow-2xl border-4 border-black p-8 min-h-[500px]">

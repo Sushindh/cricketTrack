@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { StarIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
+import FavoriteButton from "../components/FavoriteButton";
 
 const PlayerStats = () => {
   const [players, setPlayers] = useState([]);
@@ -90,15 +91,15 @@ const PlayerStats = () => {
             className="p-6 bg-white border-2 border-black rounded-xl shadow-lg cursor-pointer"
             onClick={() => onPlayerClick(player)}
           >
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">{player.name}</h3>
-              <button onClick={e => {e.stopPropagation(); toggleFav(player.id);}}>
-                {favorites.includes(player.id) ? (
-                  <StarIconSolid className="w-6 h-6 text-yellow-500" />
-                ) : (
-                  <StarIcon className="w-6 h-6 text-gray-400" />
-                )}
-              </button>
+            <div className="border rounded-lg p-4 mb-4 flex justify-between items-center">
+              <span className="font-bold">{player.name}</span>
+              <FavoriteButton
+  itemId={player.id}
+  itemType="player" // <-- ADD THIS!
+  title={player.name} // <-- recommended for user-friendly favorites
+  data={{ country: player.country }} // optional
+  isFavorite={favorites.some(f => f.itemId === player.id && f.type === "player")}
+/>
             </div>
             <p className="mb-3 text-gray-600">{player.country}</p>
           </div>
